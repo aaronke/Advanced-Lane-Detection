@@ -19,6 +19,7 @@ The goals / steps of this project are the following:
 [image4]: ./output_images/color_fit_line.jpg "Color Fit Line"
 [image5]: ./output_images/color_fit_line2.jpg "Color Fit Line 2"
 [image6]: ./test_images/straight_lines1.jpg "Test Image"
+[image7]: ./output_images/distort_image2.jpg "Undistorted 2"
 [video1]: ./project_video.mp4 "Video"
 
 ### Camera Calibration
@@ -36,7 +37,7 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 #### 1. Provide an example of a distortion-corrected image.
 
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![image6]
+![image7]
 
 #### 2. Threshold Binary Image 
 
