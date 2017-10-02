@@ -13,95 +13,95 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
+[image1]: ./output_images/distort_image.jpg "Undistorted"
+[image2]: ./output_images/binary_combined_image.jpg "Binary Combined Image"
+[image3]: ./output_images/warped_stright_line.jpg "Warped Stright Line"
+[image4]: ./output_images/color_fit_line.jpg "Color Fit Line"
+[image5]: ./output_images/color_fit_line2.jpg "Color Fit Line 2"
+[image6]: ./test_images/straight_lines1.jpg "Test Image"
 [video1]: ./project_video.mp4 "Video"
 
 ### Camera Calibration
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./code/.ipynb" (or in lines # through # of the file called `some_file.py`).  
+The code for this step is contained in the first code cell of the IPython notebook located in "./code/pipeline.ipynb" 
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![alt text][image1]
+![image1]
 
 ### Pipeline (single images)
 
 #### 1. Provide an example of a distortion-corrected image.
 
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+![image6]
 
-#### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+#### 2. Threshold Binary Image 
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+Under 'Gradient threshhold methods' section in ./code/pipeline.ipynb, I used a combination of the following threshold:
 
-![alt text][image3]
+    a. soble gradients of x, y
+    b. sobel gradient magitude of x,y
+    c. sobel gradient direction
+    d. s channel of HLS
 
-#### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+Here's an example of my output for this step.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+![image2]
 
-```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
-```
+#### 3. Perspective Transform
 
-This resulted in the following source and destination points:
+Under 'Image perspective transform' in ./code/pipeline.ipynp. The `warperImage()` function takes as inputs an image (`image`).
+The source source and destination points are predefined and hardcoded.
+
+The following source and destination points:
+source_points = np.float32([[245, 690],[596, 450], [685, 450], [1068, 690]])
+dest_points = np.float32([[240, 700], [240, 0], [970, 0], [970, 700]])
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 245, 690      | 240, 700      | 
+| 596, 450      | 240, 0        |
+| 685, 450      | 970, 0        |
+| 1068, 690     | 9670, 700     |
 
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+I verified that my perspective transform was working as expected by drawing the source and destination points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![image3]
 
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+#### 4. Identify lane lines and fit with a polynomial
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Under 'Implement Sliding Windows and Fit a Polynomial' Section, method 'init_frame' is uesed to detect lane lines of image.
+First, we used histogram to find the base x position of lane lines, then using a sliding window (100, image.height/9) to search the line points.
+After searching all the interesting area, we polyfit the lane line points, then get the fit coefficients. 
+A example of image looks like this:
 
-![alt text][image5]
+![image4]
 
-#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+#### 5. Curature of lane lines
 
-I did this in lines # through # in my code in `my_other_file.py`
+The following code section is used to caculate the curvature of lane lines once
+```python
+y_eval = np.max(ploty)
+left_curverad = ((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
+```
+#### 6. Final lane detection 
+After the lanes of first frame of a video is detected, then we can use 'processing_frame' method to process each frame.
+A example of lane detected images looks like:
 
-#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
-
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
-
-![alt text][image6]
-
----
+![image5]
 
 ### Pipeline (video)
+Final video processing is under 'Video process pipeline' and 'Pipeline frame processing' section.
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+#### 1. 
 
 Here's a [link to my video result](./project_video.mp4)
 
 ---
 
 ### Discussion
-
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+1. Noticed the lane detection is easily fail at the road surface where is not clean(misleading tree shadows, dust cover the lane lines...), a more robust gradient threshhold method is needed to filter out these noises.
+2. The solution is unable to detect road which is not flat. Maybe the slope of road data is needed in order to transform the road images into a flatten 2D space.
