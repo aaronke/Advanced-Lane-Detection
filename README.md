@@ -20,7 +20,7 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/color_fit_line2.jpg "Color Fit Line 2"
 [image6]: ./test_images/straight_lines1.jpg "Test Image"
 [image7]: ./output_images/distort_image2.jpg "Undistorted 2"
-[video1]: ./project_video.mp4 "Video"
+[gif1]:   ./output_images/video.gif "Video"
 
 ### Camera Calibration
 
@@ -97,9 +97,7 @@ A example of lane detected images looks like:
 ### Pipeline (video)
 Final video processing is under 'Video process pipeline' and 'Pipeline frame processing' section.
 
-#### 1. 
-
-Here's a [link to my video result](./project_video.mp4)
+![gif1]
 
 ---
 
